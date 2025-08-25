@@ -1,0 +1,42 @@
+name: Save Docker image as artifact
+
+on:
+  workflow_dispatch:
+
+jobs:
+  save-and-upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          docker build -t m-btap-ml-cpu -f Dockerfile .
+
+      - name: Save Docker image as artifact
+        run: |
+          docker save -o image.tar m-btap-ml-cpu
+          mkdir -p ./artifacts
+          mv image.tar ./artifacts/
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image-mas-btap-1
+          path: ./artifacts/image.tar
+
+      - name: Ensure rolling tag
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          git tag -f public-download
+          git push -f origin public-download
+
+      # Upload to a GitHub Release
+      - name: Upload to release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: public-download
+          files: ./artifacts/image.tar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}          

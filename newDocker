@@ -1,0 +1,55 @@
+# ===== Stage 1: Builder =====
+FROM tensorflow/tensorflow:2.8.0 AS builder
+
+# Install system deps needed for building Python packages
+RUN apt-get update && apt-get install -y \
+    python3.9 python3-pip \
+    build-essential \
+    libssl-dev \
+    libffi-dev \
+    python3-dev \
+    git \
+ && rm -rf /var/lib/apt/lists/*
+
+# Make Python 3.9 default
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1
+
+WORKDIR /app
+
+# Copy only requirements first for caching
+COPY requirements.txt .
+
+# Upgrade pip & setuptools before building wheels
+RUN python -m pip install --no-cache-dir --upgrade pip setuptools wheel packaging
+
+# Build all dependencies into wheels (offline-ready)
+RUN pip wheel --no-cache-dir --default-timeout=6000 --retries=50 \
+    -r requirements.txt -w /wheels
+
+# ===== Stage 2: Final image =====
+FROM tensorflow/tensorflow:2.8.0
+
+WORKDIR /app
+
+# Install system deps (runtime only, no build-essential)
+RUN apt-get update && apt-get install -y \
+    python3.9 python3-pip \
+ && rm -rf /var/lib/apt/lists/*
+
+# Make Python 3.9 default
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1
+
+# Copy wheels & requirements from builder
+COPY --from=builder /wheels /wheels
+COPY requirements.txt .
+
+# Install packages from local wheels (offline)
+RUN pip install --no-cache-dir --find-links=/wheels -r requirements.txt
+
+# Copy application source
+COPY src ./src
+
+# Create input/output folders
+RUN mkdir -p input output
+
+CMD ["/bin/bash"]

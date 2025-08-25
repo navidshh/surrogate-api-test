@@ -1,0 +1,54 @@
+# ==============================
+# Stage 1: Dependency Builder
+# ==============================
+FROM python:3.9-slim AS builder
+
+WORKDIR /wheels
+
+# Install build tools for compiling dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libssl-dev \
+    libffi-dev \
+    python3-dev \
+    git \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+
+# Upgrade pip and setuptools
+RUN pip install --no-cache-dir --upgrade pip setuptools packaging
+
+# Download all wheels (including big packages) for offline install
+RUN pip wheel --no-cache-dir --default-timeout=6000 --retries=500 \
+    -r requirements.txt -w /wheels
+
+
+# ==============================
+# Stage 2: Final Runtime Image
+# ==============================
+FROM tensorflow/tensorflow:2.8.0
+
+# Install Python 3.9
+RUN apt-get update && apt-get install -y \
+    python3.9 \
+    python3-pip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1
+
+WORKDIR /home/btap_ml
+
+# Copy wheels from builder
+COPY --from=builder /wheels /wheels
+
+# Install from local wheels (offline, no internet needed)
+RUN pip install --no-cache-dir /wheels/*
+
+COPY src ./src
+
+RUN mkdir output input
+
+CMD ["/bin/bash"]

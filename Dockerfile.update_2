@@ -1,0 +1,17 @@
+FROM m-btap-ml-cpu
+
+#RUN apt update && apt install nano -y
+
+COPY src ./src
+COPY src/api/.env .src/api/.env
+# COPY input ./input
+RUN ls -la ./src/api
+
+WORKDIR /home/btap_ml
+
+RUN pip3 install "pydantic[dotenv]"
+RUN pip3 install uvicorn
+RUN pip3 install python-multipart
+RUN pip3 install pyjwt[crypto]
+
+CMD ["/bin/bash"]

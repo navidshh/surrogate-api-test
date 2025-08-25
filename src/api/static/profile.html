@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Research Platform</title>
+    
+    <!-- Using the Tailwind CSS CDN for simplicity. For production, you should use a compiled CSS file. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide icons for icons like login, database, etc. -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="{{ url_for('static', path='js/functions.js') }}"></script>
+
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <div class="min-h-screen">
+      <!-- Header -->
+      <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <nav class="max-w-7xl mx-auto px-6 py-4">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center">
+                <i data-lucide="database" class="w-5 h-5 text-white"></i>
+              </div>
+              <div>
+                <h1 class="text-xl font-semibold text-gray-900">Surrogate Model</h1>
+                <p class="text-sm text-gray-600 hidden sm:block">ML Research Platform</p>
+              </div>
+            </div>
+            
+            <!-- Conditional Login/Logout Button -->
+            {% if user %}
+              <div class="flex items-center space-x-4">
+                <span class="text-gray-700 hidden sm:block">Welcome, {{ user.get('email', 'User') }}!</span>
+                <a href="/auth/logout" class="flex items-center space-x-2 bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded transition-colors duration-200">
+                  <i data-lucide="log-out" class="w-4 h-4"></i>
+                  <span>Logout</span>
+                </a>
+              </div>
+            {% else %}
+              <a 
+                href="{{ cognito_login_url }}" 
+                class="flex items-center space-x-2 bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded transition-colors duration-200"
+              >
+                <i data-lucide="log-in" class="w-4 h-4"></i>
+                <span>Access System</span>
+              </a>
+            {% endif %}
+
+          </div>
+        </nav>
+      </header>
+
+      <!-- Main Content -->
+      <main>
+        <!-- Hero Section -->
+        <section class="bg-white">
+            <div class="max-w-7xl mx-auto px-6 py-20 text-left">
+                <h2 class="text-4xl font-bold text-gray-900 leading-tight">Application</h2>                
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="py-16 sm:py-20">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="text-left">
+                    <p class="mt-3 text-lg text-gray-600 max-w-2xl">Our advanced algorithms deliver precise predictions to help optimize your energy usage and reduce environmental impact.</p>
+                </div>
+                
+                <div class="mt-16 grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-8">
+                    <!-- Feature Card 1 -->
+                    <div class="bg-white border border-gray-200 rounded-lg p-8 text-left transition-transform transform hover:-translate-y-2">
+                        <span class="text-5xl mb-4 inline-block"></span>
+                        <button 
+                          onclick="fetchProtectedData()" 
+                          class="flex items-center space-x-2 bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded transition-colors duration-200"
+                        >
+                          <i data-lucide="play" class="w-4 h-4"></i>
+                          <span>Check sample data end point</span>
+                        </button>                        
+                        <div id="api-response" class="mt-4 p-4 bg-gray-100 border rounded text-sm font-mono text-gray-800 overflow-auto hidden"></div>
+                    </div>
+                    <!-- Feature Card 2 -->
+                    <div class="bg-white border border-gray-200 rounded-lg p-8 text-center transition-transform transform hover:-translate-y-2">
+                        <span class="text-5xl mb-4 inline-block"></span>
+                        <h3 class="text-xl font-semibold text-gray-900">Carbon Footprint Analysis</h3>
+                        <p class="mt-2 text-gray-600">Calculate and forecast carbon emissions across different sectors with real-time environmental impact assessment.</p>
+                    </div>
+                    <!-- Feature Card 3 -->
+                    <div class="bg-white border border-gray-200 rounded-lg p-8 text-center transition-transform transform hover:-translate-y-2">
+                        <span class="text-5xl mb-4 inline-block"></span>
+                        <h3 class="text-xl font-semibold text-gray-900">Advanced Analytics</h3>
+                        <p class="mt-2 text-gray-600">Comprehensive dashboards and reports with actionable insights for sustainable decision-making.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="bg-gray-800 text-white py-16 sm:py-20">
+            <div class="max-w-7xl mx-auto px-6 text-center">
+                <h2 class="text-4xl font-bold">System Stats</h2>
+                <div class="mt-12 grid grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="stat-item">
+                        <h3 class="text-5xl font-bold text-cyan-400">99.9%</h3>
+                        <p class="mt-2 text-gray-300">API Uptime</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3 class="text-5xl font-bold text-cyan-400">2.5</h3>
+                        <p class="mt-2 text-gray-300">Average Predictions Daily</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3 class="text-5xl font-bold text-cyan-400">15%</h3>
+                        <p class="mt-2 text-gray-300">Average Energy Savings</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3 class="text-5xl font-bold text-cyan-400">500</h3>
+                        <p class="mt-2 text-gray-300">Runs</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section 
+        <section class="py-16 sm:py-24">
+            <div class="max-w-7xl mx-auto px-6 text-center">
+                <h2 class="text-4xl font-bold text-gray-900">Ready to Optimize Your Energy Future?</h2>
+                <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">Join thousands of organizations already using our ML platform to reduce costs and environmental impact.</p>
+                <div class="mt-8">
+                    <a href="#" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition-colors">
+                        Get Started with Free Trial
+                    </a>
+                </div>
+            </div>
+        </section>
+        -->
+
+      </main>
+
+      <!-- Footer -->
+      <footer class="bg-white border-t border-gray-200">
+        <div class="max-w-7xl mx-auto px-6 py-6">
+          <div class="flex flex-col sm:flex-row justify-between items-center text-sm text-gray-600">
+            <div class="mb-2 sm:mb-0">EcoPredict ML Research Platform v2.1.0</div>
+            <div>Research Use Only • Contact: support@ecopredict.research</div>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      // Renders the icons after the page loads
+      lucide.createIcons();
+    </script>
+</body>
+</html>

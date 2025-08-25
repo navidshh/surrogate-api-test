@@ -1,0 +1,1 @@
+docker build -f newDocker -t btap-ml-cpu:1.0.0 .

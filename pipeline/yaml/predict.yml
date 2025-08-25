@@ -1,0 +1,35 @@
+name: Predict Function
+description: Predicts the output variable
+
+inputs:
+- {name: param_search, type: String, description: 'Specify whether to search for hyperparameter, yes or no'}
+- {name: in_obj_name, type: String, description: 'Name of the input path for process data'}
+- {name: features, type: String, description: 'Name of the input path for selected features data'}
+- {name: output_path, type: String, description: 'Name of the input path for selected features data'}
+
+
+implementation:
+  container:
+    # The strict name of a container image that you've pushed to a container registry.
+    image: k8scc01covidacr.azurecr.io/btap:22b925247f1fd668edefc8bf21143a3082864d26
+
+
+    command: [      python3,
+
+      # Path of the program inside the container
+      /pipelines/predict.py,
+
+      --param_search,
+      {inputValue: param_search},
+
+      --in_obj_name,
+      {inputValue: in_obj_name},
+
+      --features,
+      {inputValue: features},
+
+      --output_path,
+      {inputValue: output_path},
+
+
+    ]

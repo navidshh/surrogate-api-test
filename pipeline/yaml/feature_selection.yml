@@ -1,0 +1,32 @@
+name: Feature selection Function
+description: Selects the feature that would be used in building the model
+
+inputs:
+
+- {name: in_obj_name, type: String, description: 'Name of minio bucket to access data from'}
+- {name: estimator_type, type: String, description: 'Name of minio bucket to access data from'}
+- {name: output_path, type: String, description: 'Path where the output data will be stored.'}
+
+
+implementation:
+  container:
+    # The strict name of a container image that you've pushed to a container registry.
+    image: k8scc01covidacr.azurecr.io/btap:22b925247f1fd668edefc8bf21143a3082864d26
+
+
+    command: [
+      python3,
+
+      #Path of the program inside the container
+      /pipelines/feature_selection.py,
+
+      --in_obj_name,
+      {inputValue: in_obj_name},
+
+      --estimator_type,
+      {inputValue: estimator_type},
+
+      --output_path,
+      {inputValue: output_path},
+
+    ]
