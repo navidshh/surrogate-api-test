@@ -68,7 +68,7 @@ jobs:
           # 2. Create a new definition file.
           # This jq command filters the '.taskDefinition' object, updates the image,
           # and removes ALL keys that are invalid for registration.
-            jq --arg IMAGE_URI "$NEW_IMAGE_URI" \
+          jq --arg IMAGE_URI "$NEW_IMAGE_URI" \
             --arg COGNITO_REGION "${{ secrets.COGNITO_REGION }}" \
             --arg COGNITO_USER_POOL_ID "${{ secrets.COGNITO_USER_POOL_ID }}" \
             --arg COGNITO_APP_CLIENT_ID "${{ secrets.COGNITO_APP_CLIENT_ID }}" \
@@ -77,20 +77,33 @@ jobs:
             --arg COGNITO_DOMAIN "${{ secrets.COGNITO_DOMAIN }}" \
             --arg APP_BASE_URL "${{ secrets.APP_BASE_URL }}" \
             --arg VERSION_STRING "${{ secrets.VERSION_STRING }}" \
-            '.taskDefinition
-            | .containerDefinitions[0].image = $IMAGE_URI
-            | .containerDefinitions[0].environment += [
-                {name: "COGNITO_REGION", value: $COGNITO_REGION},
-                {name: "COGNITO_USER_POOL_ID", value: $COGNITO_USER_POOL_ID},
-                {name: "COGNITO_APP_CLIENT_ID", value: $COGNITO_APP_CLIENT_ID},
-                {name: "COGNITO_APP_PUBLIC_CLIENT_ID", value: $COGNITO_APP_PUBLIC_CLIENT_ID},
-                {name: "COGNTO_APP_CLIENT_SECRET", value: $COGNITO_APP_CLIENT_SECRET},
-                {name: "COGNITO_DOMAIN", value: $COGNITO_DOMAIN},
-                {name: "APP_BASE_URL", value: $APP_BASE_URL},
-                {name: "VERSION_STRING", value: $VERSION_STRING}
-            ]
-            | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy, .tags)
-            ' task-definition.json > new-task-definition.json
+          '
+          .taskDefinition
+          | .containerDefinitions[0].image = $IMAGE_URI
+          | .containerDefinitions[0].environment |= (
+              map(select(.name != "COGNITO_REGION" and
+                        .name != "COGNITO_USER_POOL_ID" and
+                        .name != "COGNITO_APP_CLIENT_ID" and
+                        .name != "COGNITO_APP_PUBLIC_CLIENT_ID" and
+                        .name != "COGNITO_APP_CLIENT_SECRET" and
+                        .name != "COGNITO_DOMAIN" and
+                        .name != "APP_BASE_URL" and
+                        .name != "VERSION_STRING"
+              ))
+              + [
+                  {name: "COGNITO_REGION", value: $COGNITO_REGION},
+                  {name: "COGNITO_USER_POOL_ID", value: $COGNITO_USER_POOL_ID},
+                  {name: "COGNITO_APP_CLIENT_ID", value: $COGNITO_APP_CLIENT_ID},
+                  {name: "COGNITO_APP_PUBLIC_CLIENT_ID", value: $COGNITO_APP_PUBLIC_CLIENT_ID},
+                  {name: "COGNITO_APP_CLIENT_SECRET", value: $COGNITO_APP_CLIENT_SECRET},
+                  {name: "COGNITO_DOMAIN", value: $COGNITO_DOMAIN},
+                  {name: "APP_BASE_URL", value: $APP_BASE_URL},
+                  {name: "VERSION_STRING", value: $VERSION_STRING}
+                ]
+          )
+          | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy, .tags)
+          ' task-definition.json > new-task-definition.json
+
           
           # 3. Register the new task definition using the clean file.
           # The 'file://' prefix is the standard way to pass JSON input.
