@@ -41,8 +41,7 @@ class AppConfig(BaseModel):
     # Bucket used to store model training data
     TRAINING_BUCKET_NAME: str = 'model_training'
     # # URL where weather files are stored
-    # WEATHER_DATA_STORE: AnyHttpUrl = 'https://raw.githubusercontent.com/NREL/openstudio-standards/nrcan/data/weather/'    
-    # WEATHER_DATA_STORE: AnyHttpUrl = 'https://raw.githubusercontent.com/MS/btap-weather/main'
+    # WEATHER_DATA_STORE: AnyHttpUrl = 'https://raw.githubusercontent.com/NREL/openstudio-standards/nrcan/data/weather/' # NRCan's weather file but may not working.
     WEATHER_DATA_STORE: AnyHttpUrl = 'https://raw.githubusercontent.com/bsuite365/surrogate_model_weather/main' # BSUP's weather file.
 
     # WEATHER_DATA_STORE: dict = {
