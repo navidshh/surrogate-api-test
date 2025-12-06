@@ -43,7 +43,7 @@ class AppConfig(BaseModel):
     # # URL where weather files are stored
     # WEATHER_DATA_STORE: AnyHttpUrl = 'https://raw.githubusercontent.com/NREL/openstudio-standards/nrcan/data/weather/'    
     # WEATHER_DATA_STORE: AnyHttpUrl = 'https://raw.githubusercontent.com/MS/btap-weather/main'
-    WEATHER_DATA_STORE: AnyHttpUrl = 'https://raw.githubusercontent.com/bsuite365/surrogate_model_weather/main'
+    WEATHER_DATA_STORE: AnyHttpUrl = 'https://raw.githubusercontent.com/bsuite365/surrogate_model_weather/main' # BSUP's weather file.
 
     # WEATHER_DATA_STORE: dict = {
     #     "historic": "https://github.com/canmet-energy/btap_weather/tree/main/historic",
