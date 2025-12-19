@@ -2,6 +2,7 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse, PlainTextResponse
 from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
 from fastapi.openapi.models import OAuthFlowAuthorizationCode
@@ -62,6 +63,19 @@ app = FastAPI(
         "scopes": {"openid"},
         "usePkceWithAuthorizationCodeGrant": True,
     }
+)
+
+# Add CORS middleware to allow requests from GitHub Pages
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://navidshh.github.io",
+        "http://localhost:8080",
+        "http://localhost:8000"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
